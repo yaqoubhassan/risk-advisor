@@ -34,13 +34,25 @@ This is a simple Laravel Vue (with Tailwind CSS) project that allows customers i
 
 ## TESTS
 
-To run tests, execute the command
+1. To run tests, execute the command
 
     ```bash
-    php artisan test
+    php artisan db:seed
     ```
 
 For test coverage, you can locate (and open in a browser) the `index.html` file in the `\coverage` folder in the root directory
+
+## Run Project
+
+1. Run the following commands in two separte terminals
+
+    ```bash
+    php artisan serve
+    ```
+
+    ```bash
+    npm run dev
+    ```
 
 ## API Endpoints
 
