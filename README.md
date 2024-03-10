@@ -44,7 +44,7 @@ For test coverage, you can locate (and open in a browser) the `index.html` file 
 
 ## Run Project
 
-1. Run the following commands in two separte terminals
+1. Run the following commands in two separate terminals
 
     ```bash
     php artisan serve
