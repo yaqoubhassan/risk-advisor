@@ -12,15 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('consumers', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->bigIncrements('id');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email')->unique();
+            $table->string('phone_number')->unique();
+            $table->enum('contact_preference', ['email', 'sms'])->default('email');
             $table->string('street_address')->nullable();
             $table->string('apartment')->nullable();
             $table->string('city');
             $table->string('state');
             $table->string('zip_code');
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

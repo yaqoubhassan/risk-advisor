@@ -1,6 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities"; */
+
+* {
+    @apply transition-all duration-300 ease-in-out box-border;
+}
+
+body {
+    @apply bg-white;
+}
+
+.pseudo-page {
+    @apply w-screen h-screen flex;
+
+    .cover {
+        @apply hidden lg:block lg:w-1/2 h-full bg-cover bg-center bg-no-repeat rounded-3xl;
+        background-image: var(--bg-img);
+    }
+
+    main,
+    .main {
+        @apply w-full lg:w-1/2 h-full p-4 md:p-8 lg:p-12 xl:p-16 flex justify-center lg:justify-start items-center overflow-y-auto;
+
+        .container {
+            @apply max-w-[500px];
+        }
+
+        h1 {
+            @apply text-3xl font-semibold mb-2;
+
+            & + p {
+                @apply text-gray-400;
+            }
+        }
+    }
+}
+
+label {
+    @apply mb-2 inline-block;
+}
