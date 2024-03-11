@@ -1,3 +1,17 @@
+export function getAxiosErrorMessage(err) {
+    let message = err.message;
+    if (
+        err.response &&
+        err.response?.data &&
+        typeof err.response?.data === "string"
+    ) {
+        message = err.response.data;
+    } else if (err.response?.data?.message) {
+        message = err.response.data.message;
+    }
+    return message;
+}
+
 export const statesInUS = [
   { name: "Alabama", id: "AL" },
   { name: "Alaska", id: "AK" },
