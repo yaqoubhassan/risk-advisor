@@ -7,40 +7,34 @@ use App\Models\Submission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\CreateSubmissionRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Http;
 
 class SubmissionController extends Controller
 {
-    public function createSubmission(CreateSubmissionRequest $request)
+    public function createSubmission(CreateSubmissionRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
+            $payload = $request->validated();
+            ['email' => $email, 'selectedProducts' => $selectedProducts] = $payload;
+
             $consumer = Consumer::firstOrCreate(
                 [
-                    'email' => $request->input('email')
+                    'email' => $email
                 ],
-                [
-                    'first_name' => $request->input('first_name'),
-                    'last_name' => $request->input('last_name'),
-                    'phone_number' => $request->input('phone_number'),
-                    'contact_preference' => $request->input('contact_preference'),
-                    'street_address' => $request->input('street_address'),
-                    'apartment' => $request->input('apartment'),
-                    'city' => $request->input('city'),
-                    'state' => $request->input('state'),
-                    'zip_code' => $request->input('zip_code')
-                ]
+                $payload
             );
 
-            $selectedProducts = $request->input('selectedProducts');
-            foreach ($selectedProducts as $product) {
-                Submission::create(
-                    [
-                        'consumer_id' => $consumer->id,
-                        'product_id' => $product
-                    ]
-                );
-            }
+            $consumerId = $consumer->id;
+            $data = array_map(function ($productId) use ($consumerId) {
+                return [
+                    'product_id' => $productId,
+                    'consumer_id' => $consumerId,
+                ];
+            }, $selectedProducts);
+            $consumer->submissions()->createMany($data);
 
             DB::commit();
 
@@ -49,7 +43,8 @@ class SubmissionController extends Controller
                     'data' => [
                         'message' => 'Form submitted successfully'
                     ]
-                ]
+                ],
+                201,
             );
         } catch (\Exception $e) {
             DB::rollBack();
