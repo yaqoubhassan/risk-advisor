@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Consumer extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'first_name',
@@ -22,8 +24,8 @@ class Consumer extends Model
         'zip_code'
     ];
 
-    public function submissions()
+    public function submissions(): HasMany
     {
-        return $this->has(Submission::class);
+        return $this->hasMany(Submission::class);
     }
 }
