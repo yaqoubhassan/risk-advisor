@@ -13,18 +13,19 @@ return new class extends Migration
     {
         Schema::create('consumers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name', 150);
+            $table->string('last_name', 150);
             $table->string('email')->unique();
             $table->string('phone_number')->unique();
             $table->enum('contact_preference', ['email', 'sms'])->default('email');
             $table->string('street_address')->nullable();
             $table->string('apartment')->nullable();
-            $table->string('city');
-            $table->string('state');
-            $table->string('zip_code');
+            $table->string('city', 70);
+            $table->string('state', 40);
+            $table->string('zip_code', 15);
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
