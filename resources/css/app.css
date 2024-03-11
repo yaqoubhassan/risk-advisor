@@ -14,7 +14,7 @@ body {
     @apply w-screen h-screen flex;
 
     .cover {
-        @apply hidden lg:block lg:w-1/2 h-full bg-cover bg-center bg-no-repeat rounded-3xl;
+        @apply hidden lg:block lg:w-1/2 h-full bg-cover bg-center bg-no-repeat rounded-l-lg rounded-r-2xl;
         background-image: var(--bg-img);
     }
 
