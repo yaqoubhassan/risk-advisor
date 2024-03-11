@@ -1,20 +1,42 @@
-<script setup>
-import { provide } from "vue";
+<script>
+import {computed,} from "vue";
 
-/** @type {ModelRef<ActiveInsuranceOption | null>} */
-const model = defineModel({ required: true, default: null });
-
-provide("insuranceOption", model);
+export default {
+    name: 'InsuranceOptions',
+    props: {
+        modelValue: {
+            type: Array,
+            default: () => []
+        }
+    },
+    emits: ['update:modelValue'],
+    computed: {
+        value: {
+            get() {
+                return this.modelValue
+            },
+            set(value) {
+                this.$emit('update:modelValue', value)
+            }
+        }
+    },
+    provide() {
+        return {
+            insuranceOptions: computed(() => this.value),
+            setInsuranceOptions: (value) => this.value = value
+        }
+    }
+}
 </script>
 
 <template>
-  <div class="insurance-options">
-    <slot />
-  </div>
+    <div class="insurance-options">
+        <slot/>
+    </div>
 </template>
 
 <style scoped>
 .insurance-options {
-  @apply mt-8;
+    @apply mt-8;
 }
 </style>

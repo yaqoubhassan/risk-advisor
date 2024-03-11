@@ -1,65 +1,73 @@
-<script setup>
-import { computed, inject } from "vue";
-import { PhCar, PhCheck, PhGearSix, PhHouse } from "@phosphor-icons/vue";
+<script>
+import {PhCar, PhCheck, PhGearSix, PhHouse} from "@phosphor-icons/vue";
 
-const props = defineProps({
-    /**
-     * @type {ActiveInsuranceOption}
-     */
-    option: {
-        type: String,
-        required: true,
-        validator(value) {
-            return ["home", "auto", "recreational-vehicle"].includes(value);
+export default {
+    name: "InsuranceOption",
+    components: {
+        PhCar,
+        PhCheck,
+        PhGearSix,
+        PhHouse,
+    },
+    props: {
+        option: {
+            type: String,
+            required: true,
+            validator(value) {
+                return ["home", "auto", "recreational-vehicle"].includes(value);
+            },
         },
     },
-});
-
-/**
- * @type {Ref<ActiveInsuranceOption | null>}
- */
-const activeOption = inject("insuranceOption");
-
-const active = computed(() => activeOption.value === props.option);
-
-const icon = computed(() => {
-    let icon = PhHouse;
-    if (props.option === "auto") {
-        icon = PhCar;
-    } else if (props.option === "recreational-vehicle") {
-        icon = PhGearSix;
-    }
-    return icon;
-});
-
-/**
- * @param {ActiveInsuranceOption} option
- */
-function setActiveOption(option) {
-    if (activeOption.value === option) {
-        activeOption.value = null;
-    } else {
-        activeOption.value = option;
-    }
+    inject: ["insuranceOptions",'setInsuranceOptions'],
+    computed: {
+        active() {
+            return this.insuranceOptions.includes(this.option);
+        },
+        icon() {
+            let icon = PhHouse;
+            if (this.option === "auto") {
+                icon = PhCar;
+            } else if (this.option === "recreational-vehicle") {
+                icon = PhGearSix;
+            }
+            return icon;
+        },
+    },
+    methods: {
+        setActiveOption(option) {
+            const alreadySelected = this.insuranceOptions.includes(option);
+            if (alreadySelected) {
+                const optionsWithoutOption = this.insuranceOptions.filter(
+                    (o) => o !== option
+                );
+                this.setInsuranceOptions(optionsWithoutOption)
+            } else {
+                this.setInsuranceOptions([...this.insuranceOptions, option])
+            }
+        },
+    },
 }
 </script>
 
 <template>
     <div
         class="option"
-        :class="{ active, [props.option]: true }"
-        @click="setActiveOption(props.option)"
+        :class="{ active, [option]: true }"
+        @click="setActiveOption(option)"
     >
-        <span v-if="active">
-            <PhCheck weight="bold" size="16px" />
-        </span>
+    <span v-if="active">
+      <PhCheck weight="bold" size="16px"/>
+    </span>
 
         <div class="icon">
-            <Component :is="icon" weight="fill" size="30px" />
+            <Component :is="icon" weight="fill" size="30px"/>
         </div>
+
         <div class="description">
-            <p><slot /></p>
-            <span><slot name="description" /></span>
+            <p>
+                <slot/>
+            </p>
+            <span><slot name="description"/></span>
         </div>
     </div>
 </template>
@@ -102,13 +110,15 @@ function setActiveOption(option) {
     }
 
     &:nth-child(1) {
-        background-image: url("../../images/mini-bg-1.jpg");
+        background-image: url(/images/mini-bg-1.jpg);
     }
+
     &:nth-child(2) {
-        background-image: url("../../images/mini-bg-2.jpg");
+        background-image: url(/images/mini-bg-2.jpg);
     }
+
     &:nth-child(3) {
-        background-image: url("../../images/mini-bg-3.jpg");
+        background-image: url(/images/mini-bg-3.jpg);
     }
 }
 
