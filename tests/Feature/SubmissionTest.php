@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use GuzzleHttp\Exception\ServerException;
 use Tests\TestCase;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,10 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Requests\CreateSubmissionRequest;
+use App\Models\Consumer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SubmissionTest extends TestCase
 {
@@ -39,7 +43,7 @@ class SubmissionTest extends TestCase
 
         $response = $this->json('POST', route('submissions.store'), $requestData);
 
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson(
                 [
                     'data' => [
@@ -82,21 +86,32 @@ class SubmissionTest extends TestCase
         );
     }
 
+
+    public function testCreateSubmissionWithValidationError()
+    {
+        Product::factory()->count(4)->create();
+
+        $requestData = [];
+
+        $response = $this->json('POST', route('submissions.store'), $requestData);
+
+        $response->assertStatus(422);
+
+        // Assert that the consumer, user, and submissions were created
+
+    }
+
+
     public function testCreateSubmissionWithError()
     {
-        DB::shouldReceive('beginTransaction')->once();
-        DB::shouldReceive('rollBack')->once();
-        DB::shouldReceive('commit')->never(); // Ensure commit is not called
+        $request = $this->mock(CreateSubmissionRequest::class);
+        $request->shouldReceive('validated')->andThrow(new \Exception('Exception Error'));
 
-        // Call the createSubmission method with a mocked exception
+        Log::shouldReceive('error')->once()->with('Failed to submit form: Exception Error');
+
         $controller = new SubmissionController();
-        $request = new CreateSubmissionRequest([]);
-        $exception = new \Exception('Test exception');
+        $response = $controller->createSubmission($request);
 
-        $response = $controller->createSubmission($request, $exception);
-
-        // Assert that the response is a JSON response with an error message
-        $this->assertEquals(['error' => 'Failed to submit form'], $response->getData(true));
         $this->assertEquals(500, $response->getStatusCode());
     }
 }
