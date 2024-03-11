@@ -1,53 +1,30 @@
 <script setup>
-import { ref } from "vue";
-import LetsGetStarted from "./components/LetsGetStarted.vue";
-import PersonalInformation from "./components/PersonalInformation.vue";
-import AddressInformation from "./components/AddressInformation.vue";
+import { provide } from "vue";
 
-/** @type {Ref<PseudoPage>} */
-const page = ref("lets-get-started");
-
-function onSubmitPersonalInfo(data) {
-    console.log("Personal Information:", data);
-    page.value = "address-info";
-}
-
-function onSubmitAddressInfo(data) {
-    console.log("Address Information:", data);
-}
+provide("CONSTANTS", {
+  API_BASE_URL: "http://localhost:3000/api",
+});
 </script>
 
 <template>
+  <RouterView v-slot="{ Component }">
     <transition name="fade" mode="out-in">
-        <LetsGetStarted
-            v-if="page === 'lets-get-started'"
-            @proceed="page = 'personal-info'"
-        />
-        <PersonalInformation
-            v-else-if="page === 'personal-info'"
-            @proceed="page = 'address-info'"
-            @back="page = 'lets-get-started'"
-            @submit="onSubmitPersonalInfo"
-        />
-        <AddressInformation
-            v-else-if="page === 'address-info'"
-            @back="page = 'personal-info'"
-            @submit="onSubmitAddressInfo"
-        />
+      <Component :is="Component" />
     </transition>
+  </RouterView>
 </template>
 
 <style>
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s;
+  transition: opacity 0.5s;
 }
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 .fade-enter-to,
 .fade-leave-from {
-    opacity: 1;
+  opacity: 1;
 }
 </style>
